@@ -63,9 +63,9 @@ for i in range(NUMBER_OF_UPDATES):
 
     print('Saving data...')
     with open(data_path, 'a') as f:
-    	sensors_data_string = ''
+        sensors_data_string = ''
         for sensor_data in sensor_data_list:
-        	sensor_data_string = ''
+            sensor_data_string = ''
             for result_value in sensor_data:
                 truncated = '{0:.{1}f}'.format(result_value, PRECISION)
                 #floor, fraction = int(truncated.split(.)[0]), int(truncated.split(.)[1])   # int method
