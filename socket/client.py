@@ -1,6 +1,8 @@
 import socket, sys
 
-UDP_IP = "178.48.49.12"    # pc
+
+UDP_IP = "152.66.130.2"    # sunos
+#UDP_IP = "178.48.49.12"    # pc
 #UDP_IP =  "37.76.56.237"
 UDP_PORT = 5005
 MESSAGE = b"Helllo, World!"
