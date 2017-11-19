@@ -1,12 +1,12 @@
 import socket, binascii, os, time, subprocess, androidhelper
 from datetime import datetime
 
-def hex_encode(_input):   # float -> string
+def hex_encode(_input):   # returns string
     _input = str(_input).encode('ascii')
     bytess = binascii.hexlify(_input)        
     return bytess.decode('ascii')
     
-def hex_decode(_input):   # float -> string
+def hex_decode(_input):   # returns string
     bytess = binascii.unhexlify(_input)
     return bytess.decode('ascii')
     
@@ -16,7 +16,7 @@ def ATcmd(_cmd):
 def udp_send(MESSAGE):
     print("Sent message at " + datetime.now().strftime("%H:%M:%S.%f"))
     print("message: " + MESSAGE)
-    MESSAGE = MESSAGE.encode('ascii')
+    MESSAGE = hex_encode(MESSAGE)
     print("encoded: " + MESSAGE)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
     sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))    # takes bytes string
