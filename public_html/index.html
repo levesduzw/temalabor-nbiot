@@ -1,8 +1,55 @@
 <html>
 <head>
-    <meta http-equiv="refresh" content="2" >
     <title>NB-IoT Szenzoradatok</title>
+    <style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+    text-align: left;
+}
+</style>
     <script>
+function main() {
+    updateText();
+    startTime();
+}
+function updateText() {
+    var s = readTextFile("data.txt");
+    var fields = s.split(" ");
+    document.getElementById("11").innerHTML = fields[0];
+    document.getElementById("12").innerHTML = fields[1];
+    document.getElementById("13").innerHTML = fields[2];
+    document.getElementById("21").innerHTML = fields[3];
+    document.getElementById("22").innerHTML = fields[4];
+    document.getElementById("23").innerHTML = fields[5];
+    document.getElementById("31").innerHTML = fields[6];
+    document.getElementById("32").innerHTML = fields[7];
+    document.getElementById("33").innerHTML = fields[8];
+    document.getElementById("41").innerHTML = fields[9];
+    document.getElementById("51").innerHTML = fields[10];
+    var t = setTimeout(updateText, 1000);
+}
+
+function readTextFile(file) {
+    var allText;
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+                allText = rawFile.responseText;
+            }
+        }
+    }
+    rawFile.send(null);
+    return allText;
+}
 function startTime() {
     var today = new Date();
     var h = today.getHours();
@@ -10,26 +57,56 @@ function startTime() {
     var s = today.getSeconds();
     m = checkTime(m);
     s = checkTime(s);
-    document.getElementById('txt').innerHTML =
+    document.getElementById('clock').innerHTML =
     h + ":" + m + ":" + s;
     var t = setTimeout(startTime, 500);
 }
 function checkTime(i) {
-    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+    if (i < 10) {i = "0" + i};
     return i;
 }
 </script>
 </head>
-<body style="background-color:LightSkyBlue;" onload="startTime()">
-<div id="txt"></div>
-<p>Accelerometer</p>
-<p>Magnetometer</p>
-<p>Orientation</p>
-<p>Orientation</p>
-<p>Battery</p>
-<object data="sensor_data.txt" type="text/plain"
-width="500" style="height: 300px">
-<a href="sensor_data.txt">No Support?</a>
+<body style="background-color:LightSkyBlue;" onload="main();">
+<div id="clock"></div>
+<table style="width:600px">
+  <caption>3-axis sensors</caption>
+  <tr>
+    <th>Sensor</th>
+    <th>X value</th>
+    <th>Y value</th>
+    <th>Z value</th>
+  </tr>
+  <tr>
+    <td>Orientation sensor</td>
+    <td id="11"></td>
+    <td id="12"></td>
+    <td id="13"></td>
+  </tr>
+  <tr>
+    <td>Accelerometer</td>
+    <td id="21"></td>
+    <td id="22"></td>
+    <td id="23"></td>
+  </tr>
+  <tr>
+    <td>Magnetic sensor</td>
+    <td id="31"></td>
+    <td id="32"></td>
+    <td id="33"></td>
+  </tr>
+</table>
+<table style="width:300px">
+  <caption>Single value sensors</caption>
+  <tr>
+    <td>Light sensor</td>
+    <td id="41"></td>
+  </tr>
+  <tr>
+    <td>Battery</td>
+    <td id="51"></td>
+  </tr>
+</table>
 </object>
 </body>
 </html>

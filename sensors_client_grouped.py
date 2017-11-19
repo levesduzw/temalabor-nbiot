@@ -1,4 +1,5 @@
 import socket, binascii, os, time, subprocess, androidhelper
+from datetime import datetime
 
 def hex_encode(_input):   # float -> string
     _input = str(_input).encode('ascii')
@@ -10,36 +11,37 @@ def hex_decode(_input):   # float -> string
     return bytess.decode('ascii')
     
 def ATcmd(_cmd):
-    subprocess.Popen('echo -e "{}\r" > /dev/ttyACM0 '.format(_cmd), shell=True) 
+    subprocess.Popen('echo -e "{}\r" > /dev/ttyACM0'.format(_cmd), shell=True) 
     
-def udp_send(_bytes):
-    print("UDP target IP:" + UDP_IP)
-    print("UDP target port:" + str(UDP_PORT))
-    print("message:" + MESSAGE.decode('ascii'))
-
+def udp_send(MESSAGE):
+    print("Sent message at " + datetime.now().strftime("%H:%M:%S.%f"))
+    print("message: " + MESSAGE)
+    MESSAGE = MESSAGE.encode('ascii')
+    print("encoded: " + MESSAGE)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
     sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))    # takes bytes string
     
 def nb_send(_hexstring):
     ATcmd('AT+NSOST=0,178.97.147.105,5005,{},{}'.format(int(len(_hexstring) / 2), _hexstring))
 
-subprocess.Popen('su', shell=True) # root shell
+subprocess.Popen('su', shell=True) # root 
 #subprocess.Popen('ls /', shell=True) #root test
 #subprocess.Popen('echo $(tty); cat /dev/ttyACM0 > $(tty) &', shell=True)    # show AT responses
-#subprocess.Popen('echo -e "AT\r" > /dev/ttyACM0 ', shell=True)     # AT cmd test
+#subprocess.Popen('echo -e "AT\r" > /dev/ttyACM0', shell=True)     # AT cmd test
 
 # client constants
-UDP_IP = "178.48.49.12"
+#UDP_IP = "178.48.49.12"     # otthoni
+UDP_IP = "152.66.130.2"     # ural2.hszk.bme.hu
 UDP_PORT = 5005
 MESSAGE = ''
 
 # sensing constants 
-NUMBER_OF_UPDATES = 4
-TIME_BETWEEN_UPDATES = 8    # sec
+NUMBER_OF_UPDATES = 6
+TIME_BETWEEN_UPDATES = 4    # sec
 PRECISION = 3
 
 path = '/storage/emulated/0/qpython/test/'
-data_path = os.path.join(path, 'data.txt')
+data_path = os.path.join(path, 'local_data.txt')
 os.chdir(path)
 if os.path.isfile(data_path): os.remove(data_path)
 
@@ -59,21 +61,23 @@ for i in range(NUMBER_OF_UPDATES):
     light = droid.sensorsGetLight().result
     battery = droid.batteryGetLevel().result
 
-    sensor_data_list = [orient, accel, magneto, [light], [battery]] 
+    sensors_data_list = [orient, accel, magneto, [light], [battery]] 
 
     print('Saving data...')
     with open(data_path, 'a') as f:
-        sensors_data_string = ''
-        for sensor_data in sensor_data_list:
-            sensor_data_string = ''
+        LIST = []
+        for sensor_data in sensors_data_list:
+            sensor_data_list = []
             for result_value in sensor_data:
                 truncated = '{0:.{1}f}'.format(result_value, PRECISION)
-                #floor, fraction = int(truncated.split(.)[0]), int(truncated.split(.)[1])   # int method
-                hexstring = hex_encode(truncated)   # hexstring method
-                sensor_data_string.append(hexstring + ' ')
-            sensors_data_string.append(sensor_data_string)
-        nb_send(sensors_data_string)
-        f.write(sensors_data_string)
+                sensor_data_list.append(truncated + ' ')
+            LIST.append(''.join(sensor_data_list))	# string
+        LIST = ''.join(LIST)
+
+        udp_send(LIST) 
+        #nb_send(LIST) # ~150 karakter
+
+        f.write(LIST)
         f.write('\n#\n')
 
 #subprocess.Popen('cd {}; pwd; ls -l; wc -l data.txt'.format(path), shell=True)

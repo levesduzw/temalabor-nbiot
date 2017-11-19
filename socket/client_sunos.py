@@ -14,7 +14,7 @@ if (len(sys.argv) >= 2):
     MESSAGE = hex_encode(sys.argv[1])
     MESSAGE = MESSAGE.encode('ascii')   # not needed for sending over NB-IoT
 
-print("Sent message at", datetime.now().strftime("%H:%M:%S.%f"))
+print("Sent message at: " + datetime.now().strftime("%H:%M:%S.%f"))
 print("message: " + sys.argv[1] + ", encoded: " + MESSAGE.decode('ascii'))
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
