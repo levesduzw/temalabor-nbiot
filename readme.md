@@ -3,7 +3,7 @@
 [Google Slides](https://goo.gl/Q8ppgK)
 
 
-ural2.hszk.bme.hu 152.66.130.2
+[http://users.hszk.bme.hu/~sl1308/](http://users.hszk.bme.hu/~sl1308/) 152.66.130.2
 
 
 AT parancsok Termux-ból:
