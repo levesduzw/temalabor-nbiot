@@ -18,6 +18,7 @@ def udp_send(MESSAGE):
     print("message: " + MESSAGE)
     MESSAGE = hex_encode(MESSAGE)
     print("encoded: " + MESSAGE)
+    MESSAGE = MESSAGE.encode('ascii')   # convert to 'bytes'
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
     sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))    # takes bytes string
     
