@@ -1,4 +1,5 @@
 import binascii, socket, sys
+from datetime import datetime
 
 def hex_encode(_input):   # float -> string
     _input = str(_input).encode('ascii')
@@ -13,9 +14,8 @@ if (len(sys.argv) >= 2):
     MESSAGE = hex_encode(sys.argv[1])
     MESSAGE = MESSAGE.encode('ascii')   # not needed for sending over NB-IoT
 
-print("UDP target IP:" + UDP_IP)
-print("UDP target port:" + str(UDP_PORT))
-print("message:" + sys.argv[1] + " encoded: " + str(MESSAGE))
+print("Sent message at", datetime.now().strftime("%H:%M:%S.%f"))
+print("message: " + sys.argv[1] + ", encoded: " + MESSAGE.decode('ascii'))
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
 sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))    # takes bytes string

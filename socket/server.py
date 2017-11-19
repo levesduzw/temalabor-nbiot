@@ -14,7 +14,8 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
 sock.bind((UDP_IP, UDP_PORT))
 
 while True:
-    data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
-    #print(datetime.now().strftime("%H:%M:%S"), "Received message:", data.decode('ascii'))  # for bytestrings
-    print(datetime.now().strftime("%H:%M:%S"), "Received message:", hex_decode(data))   # for NBIoT packets - message format??
+    data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes   class 'bytes'
+    print("Received message at", datetime.now().strftime("%H:%M:%S.%f"))  # hex_decode(data))   # for NBIoT packets - message format??
+    print("encoded: " + data.decode('ascii'))
+    print("message: " + hex_decode(data) + '\n')
     sock.sendto(b'ok', addr)
