@@ -11,6 +11,7 @@ def hex_decode(_input):   # returns string
     return bytess.decode('ascii')
     
 def ATcmd(_cmd):
+    print('Sending {}'.format(_cmd))
     subprocess.Popen('echo -e "{}\r" > /dev/ttyACM0'.format(_cmd), shell=True) 
     
 def udp_send(MESSAGE):
@@ -22,13 +23,18 @@ def udp_send(MESSAGE):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
     sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))    # takes bytes string
     
-def nb_send(_hexstring):
+def nb_send(_hexstring):    # assumes hexstring is at least 2 bytes long
+    print("Sent NB message at " + datetime.now().strftime("%H:%M:%S.%f"))
+    _hexstring = hex_encode(_hexstring)
+    print('message: {}... length:  {}'.format(_hexstring[:5], int(len(_hexstring) / 2)))
     ATcmd('AT+NSOST=1,152.66.130.2,5005,{},{}'.format(int(len(_hexstring) / 2), _hexstring))
     
 def nb_create_socket(): # not called from code yet
+    print('Creating socket 1.')
     ATcmd('AT+NSOCR=DGRAM,17,42000,1')
     
 def ATresponse():
+    ## nb_send()-be time.sleep(2) és call this?
     with open(response.txt, 'r') as f:
         print(f.readline())
     
@@ -91,9 +97,7 @@ def main():
             f.write(LIST)
             f.write('\n#\n')
             
-            ATresponse()
-
-    #subprocess.Popen('cd {}; pwd; ls -l; wc -l data.txt'.format(path), shell=True)
+            # ATresponse()  # nem tesztelve
 
     # stop monitoring 
     droid.batteryStopMonitoring()
