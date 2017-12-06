@@ -1,6 +1,8 @@
 import socket, binascii, os, time, subprocess, androidhelper
 from datetime import datetime
 
+# This code was used to successfully send NB-IoT messages.
+
 def hex_encode(_input):   # returns string
     _input = str(_input).encode('ascii')
     bytess = binascii.hexlify(_input)        
@@ -14,47 +16,37 @@ def ATcmd(_cmd):
     print('Sending {}'.format(_cmd))
     subprocess.Popen('echo -e "{}\r" > /dev/ttyACM0'.format(_cmd), shell=True) 
     
-def udp_send(MESSAGE):
+def udp_send(_string):
     print("Sent message at " + datetime.now().strftime("%H:%M:%S.%f"))
-    print("message: " + MESSAGE)
-    MESSAGE = hex_encode(MESSAGE)
-    print("encoded: " + MESSAGE)
-    MESSAGE = MESSAGE.encode('ascii')   # convert to 'bytes'
+    print("message: " + _string)
+    _string = hex_encode(_string)
+    print("encoded: " + _string)
+    _string = _string.encode('ascii')   # convert to 'bytes'
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Internet, UDP
-    sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))    # takes bytes string
+    sock.sendto(_string, (UDP_IP, UDP_PORT))    # takes bytes string
     
-def nb_send(_hexstring):    # assumes hexstring is at least 2 bytes long
-    print("Sent NB message at " + datetime.now().strftime("%H:%M:%S.%f"))
-    _hexstring = hex_encode(_hexstring)
-    print('message: {}... length:  {}'.format(_hexstring[:5], int(len(_hexstring) / 2)))
-    ATcmd('AT+NSOST=1,152.66.130.2,5005,{},{}'.format(int(len(_hexstring) / 2), _hexstring))
+def nb_send(_string):    # assumes hexstring is at least 2 bytes long
+    print("Sent NB  at " + datetime.now().strftime("%H:%M:%S.%f"))
+    _string = hex_encode(_string)
+    print('message: {}... length:  {}'.format(_string[:5], int(len(_string) / 2)))    # print only first few chars
+    ATcmd('AT+NSOST=0,152.66.130.2,5005,{},{}'.format(int(len(_string) / 2), _string))
     
-def nb_create_socket(): # not called from code yet
-    print('Creating socket 1.')
+def nb_create_socket(): # not called from code
+    print('Creating socket 0.')
     ATcmd('AT+NSOCR=DGRAM,17,42000,1')
-    
-def ATresponse():
-    ## nb_send()-be time.sleep(2) és call this?
-    with open(response.txt, 'r') as f:
-        print(f.readline())
-    
+            
 def main():
-    subprocess.Popen('su', shell=True) # root 
-    #subprocess.Popen('ls /', shell=True) #root test
-    subprocess.Popen('cd ' + path, shell=True)
-    #subprocess.Popen('echo $(tty); cat /dev/ttyACM0 > $(tty) &', shell=True)    # show AT responses
-    #subprocess.Popen('echo $(tty); cat /dev/ttyACM0 > response.txt &', shell=True)    # show AT responses
-    #subprocess.Popen('echo -e "AT\r" > /dev/ttyACM0', shell=True)     # AT cmd test
+    subprocess.Popen('su', shell=True) # change to root user
+    subprocess.Popen('echo $(tty); cat /dev/ttyACM0 > $(tty) &', shell=True)    # show AT responses - not working
 
     # client constants
-    #UDP_IP = "178.48.49.12"     # otthoni
     UDP_IP = "152.66.130.2"     # ural2.hszk.bme.hu
     UDP_PORT = 5005
     MESSAGE = ''
 
     # sensing constants 
-    NUMBER_OF_UPDATES = 6
-    TIME_BETWEEN_UPDATES = 4    # sec
+    NUMBER_OF_UPDATES = 22
+    TIME_BETWEEN_UPDATES = 12    # sec
     PRECISION = 3
 
     path = '/storage/emulated/0/qpython/test/'
@@ -66,7 +58,7 @@ def main():
     droid = androidhelper.Android()
     droid.batteryStartMonitoring()
     droid.startSensingTimed(1, 250)    # 1: all sensors, 250: minimum time between readings
-    droid.wakeLockAcquirePartial()     # run even when screen is off
+    droid.wakeLockAcquirePartial()     # run for a long time even when screen is off
 
     for i in range(NUMBER_OF_UPDATES):
         time.sleep(TIME_BETWEEN_UPDATES)
@@ -89,16 +81,18 @@ def main():
                     truncated = '{0:.{1}f}'.format(result_value, PRECISION)
                     sensor_data_list.append(truncated + ' ')
                 LIST.append(''.join(sensor_data_list))	# string
+            
             LIST = ''.join(LIST)
+            
+            if len(LIST) % 2 == 1:  # pad odd length string for encoding
+                LIST += ' '
 
-            udp_send(LIST) 
-            #nb_send(LIST) # ~150 karakter
+            #udp_send(LIST)   # testing
+            nb_send(LIST)
 
             f.write(LIST)
             f.write('\n#\n')
             
-            # ATresponse()  # nem tesztelve
-
     # stop monitoring 
     droid.batteryStopMonitoring()
     droid.stopSensing()
