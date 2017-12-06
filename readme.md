@@ -1,9 +1,22 @@
 ## BME Témalabor projekt
 
-[Google Slides](https://goo.gl/Q8ppgK)
+[Google Slides prezentáció](https://goo.gl/Q8ppgK)
 
 
-[http://users.hszk.bme.hu/~sl1308/](http://users.hszk.bme.hu/~sl1308/) 152.66.130.2
+[Szenzoradatok - ural2 weboldal](http://users.hszk.bme.hu/~sl1308/) 152.66.130.2
+
+
+Fontosabb forrásfájlok:
+* csak Interneten történő adatküldés (tesztelés)
+  * client_main_UDP.py - adatok küldése
+  * socket/server_sunos_UDP.py - adatok fogadása
+* NB-IoT hálózaton történő adatküldés 
+  * client_main_NB.py - adatok küldése
+  * socket/server_sunos_NB.py - adatok fogadása
+* adatok megjelenítése
+  * public_html/index.html
+* Arduino Passthrough Script
+  * Arduino/at_sketch.c
 
 
 AT parancsok Termux-ból:
