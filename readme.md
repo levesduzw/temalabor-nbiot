@@ -13,11 +13,11 @@ A feladat elsődleges célja az volt, hogy megvizsgáljam a piacon levő Arduino
 
 Az okostelefon szenzorainak adatait elküldi egy UDP Socket szerverre. Az okostelefon az Internetre közvetlenül nem csatlakozik, az NB-IoT hálózatot használja adatok küldésére.
 
-#### A telefon felülete
+#### A telefon felülete:
 
 ![A telefon felülete](https://i.imgur.com/lYcJTJW.jpg)
 
-#### A szerver által megjelenített weboldal
+#### A szerver által megjelenített weboldal:
 
 ![A szerver által megjelenített weboldal](https://i.imgur.com/wFQGvNu.jpg)
 
