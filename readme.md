@@ -1,12 +1,41 @@
-## BME Témalabor projekt
+## NB-IoT és okostelefonok: közös felhasználási lehetőségek
+#### BME Témalabor projekt
 
-[Google Slides prezentáció](https://goo.gl/Q8ppgK)
+Kommunikáció megvalósítása az Ericsson Narrowband IoT teszthálózatán.
 
+![Setup](https://i.imgur.com/hBA9YFY.jpg)
+
+## Cél
+
+A feladat elsődleges célja az volt, hogy megvizsgáljam a piacon levő Arduino NB-IoT Shield-ek okostelefonról való vezérelhetőségét.
+
+## Részletek
+
+Az okostelefon szenzorainak adatait elküldi egy UDP Socket szerverre. Az okostelefon az Internetre közvetlenül nem csatlakozik, az NB-IoT hálózatot használja adatok küldésére.
+
+#### A telefon felülete
+
+![A telefon felülete](https://i.imgur.com/lYcJTJW.jpg)
+
+#### A szerver által megjelenített weboldal
+
+![A szerver által megjelenített weboldal](https://i.imgur.com/wFQGvNu.jpg)
+
+#### Példakód (az elforgatás szenzor adatainak kiolvasása):
+```python
+import androidhelper
+droid = androidhelper.Android()
+droid.startSensingTimed(1, 250) # 1: all sensors, 250: minimum time between readings
+orientation = droid.sensorsReadOrientation().result
+```
 
 [Szenzoradatok - ural2 weboldal](http://users.hszk.bme.hu/~sl1308/) 152.66.130.2
 
+[Szóbeli beszámoló slideshow](https://goo.gl/Q8ppgK)
 
-Fontosabb forrásfájlok:
+## Egyéb
+
+#### Fontosabb forrásfájlok:
 * csak Interneten történő adatküldés (tesztelés)
   * client_main_UDP.py - adatok küldése
   * socket/server_sunos_UDP.py - adatok fogadása
@@ -19,7 +48,7 @@ Fontosabb forrásfájlok:
   * Arduino/at_sketch.c
 
 
-AT parancsok Termux-ból:
+#### AT parancsok Termux-ból:
 ```
 su
 cat /dev/ttyACM0 > $(tty) & 
@@ -33,7 +62,7 @@ python AT.py AT
 ```
 
 
-Parancsok teszteléshez:
+#### Parancsok teszteléshez:
 ```
 AT+CGATT?
 AT+CGPADDR
@@ -43,7 +72,7 @@ AT+NPING=8.8.8.8
 ```
 
 
-Üzenetküldés:
+#### Üzenetküldés:
 ```
 AT+NSOCR=DGRAM,17,42000,1
 AT+NSOST=0,152.66.130.2,5005,4,deadbeef
